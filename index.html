@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les 3 Mousquetaires</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border: 8px solid #ffde59;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff, #5f27cd);
+            z-index: 2;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #5f27cd 0%, #341f97 100%);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 3rem;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #ffde59;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .card {
+            padding: 40px;
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            border: 3px solid #5f27cd;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h2 {
+            color: #5f27cd;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding-left: 10px;
+        }
+
+        .instructions li {
+            padding: 8px 0;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions li::before {
+            content: '⚔️';
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            padding: 10px;
+            transition: all 0.3s;
+        }
+
+        .input-row:focus-within {
+            border-color: #5f27cd;
+            box-shadow: 0 0 0 3px rgba(95, 39, 205, 0.1);
+        }
+
+        .rank {
+            background: #5f27cd;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1.2rem;
+            padding: 10px;
+            background: transparent;
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        button {
+            flex: 1;
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #submitBtn {
+            background: linear-gradient(135deg, #ff9f43 0%, #ff7f00 100%);
+            color: white;
+        }
+
+        #submitBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 159, 67, 0.3);
+        }
+
+        #resetBtn {
+            background: linear-gradient(135deg, #54a0ff 0%, #2e86de 100%);
+            color: white;
+        }
+
+        #resetBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(86, 160, 255, 0.3);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success {
+            background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%);
+            color: white;
+            border: 3px solid #10ac84;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border: 3px solid #ee5a24;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            border: 3px solid #54a0ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #5f27cd;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            border-top: 3px solid #f8f9fa;
+            margin-top: 20px;
+        }
+
+        .crown {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+        }
+
+        .sword {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .input-row.correct {
+            border-color: #1dd1a1;
+            background: rgba(29, 209, 161, 0.05);
+        }
+
+        .input-row.incorrect {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.05);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #5f27cd;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .input-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .rank {
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+            
+            input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="crown">👑</div>
+        <div class="sword">⚔️</div>
+        
+        <div class="header">
+            <h1>LES 3 MOUSQUETAIRES</h1>
+            <p>Trouvez les noms dans le bon ordre</p>
+        </div>
+        
+        <div class="card">
+            <div class="instructions">
+                <h2>📋 Instructions</h2>
+                <ul>
+                    <li>Trouvez les noms des 3 mousquetaires</li>
+                    <li>Les noms sont dans l'ordre de préférence</li>
+                    <li>Écrivez chaque nom exactement comme dans le fichier</li>
+                    <li>Tous les noms doivent être corrects pour valider</li>
+                    <li>Le fichier est rechargé à chaque actualisation</li>
+                </ul>
+            </div>
+            
+            <div id="inputContainer" class="input-section">
+                <div class="loading" id="loading">Chargement des noms depuis ToGess.txt...</div>
+            </div>
+            
+            <div class="buttons">
+                <button id="submitBtn">
+                    <span>✅</span> VÉRIFIER
+                </button>
+                <button id="resetBtn">
+                    <span>🔄</span> RÉINITIALISER
+                </button>
+            </div>
+            
+            <div id="result" class="result"></div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="attemptCount">0</div>
+                    <div class="stat-label">TENTATIVES</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="namesCount">...</div>
+                    <div class="stat-label">NOMS À TROUVER</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Les noms sont chargés depuis ToGess.txt à chaque actualisation</p>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let correctNames = [];
+        let attemptCount = 0;
+        let currentNames = [];
+
+        // Fonction pour charger le fichier ToGess.txt
+        async function loadNamesFromFile() {
+            try {
+                // Ajouter un timestamp pour éviter le cache
+                const timestamp = new Date().getTime();
+                const response = await fetch(`ToGess.txt?t=${timestamp}`);
+                
+                if (!response.ok) {
+                    throw new Error('Fichier non trouvé');
+                }
+                
+                const text = await response.text();
+                
+                // Nettoyer et diviser les noms
+                const names = text.split('\n')
+                    .map(name => name.trim())
+                    .filter(name => name.length > 0);
+                
+                if (names.length === 0) {
+                    throw new Error('Aucun nom trouvé dans le fichier');
+                }
+                
+                return names;
+            } catch (error) {
+                console.error('Erreur:', error);
+                throw error;
+            }
+        }
+
+        // Fonction pour créer les champs d'entrée
+        function createInputFields(names) {
+            const container = document.getElementById('inputContainer');
+            container.innerHTML = '';
+            
+            names.forEach((name, index) => {
+                const row = document.createElement('div');
+                row.className = 'input-row';
+                row.id = `row-${index}`;
+                
+                row.innerHTML = `
+                    <div class="rank">${index + 1}</div>
+                    <input type="text" 
+                           id="input-${index}" 
+                           placeholder="Nom du mousquetaire n°${index + 1}"
+                           autocomplete="off">
+                `;
+                
+                container.appendChild(row);
+            });
+            
+            // Mettre à jour le compteur de noms
+            document.getElementById('namesCount').textContent = names.length;
+            
+            // Sauvegarder les noms corrects
+            correctNames = names;
+        }
+
+        // Fonction pour vérifier les réponses
+        function checkAnswers() {
+            let allCorrect = true;
+            
+            correctNames.forEach((correctName, index) => {
+                const input = document.getElementById(`input-${index}`);
+                const row = document.getElementById(`row-${index}`);
+                const userAnswer = input.value.trim();
+                
+                if (userAnswer === correctName) {
+                    row.classList.remove('incorrect');
+                    row.classList.add('correct');
+                } else {
+                    row.classList.remove('correct');
+                    row.classList.add('incorrect');
+                    allCorrect = false;
+                }
+            });
+            
+            // Incrémenter le compteur de tentatives
+            attemptCount++;
+            document.getElementById('attemptCount').textContent = attemptCount;
+            
+            // Afficher le résultat
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            
+            if (allCorrect) {
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <div style="font-size: 2rem;">🎉</div>
+                    <div>FÉLICITATIONS !</div>
+                    <div style="margin-top: 10px; font-size: 1rem;">
+                        Vous avez trouvé tous les noms en ${attemptCount} tentative${attemptCount > 1 ? 's' : ''} !
+                    </div>
+                `;
+                
+                // Désactiver les inputs
+                correctNames.forEach((_, index) => {
+                    document.getElementById(`input-${index}`).disabled = true;
+                });
+            } else {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <div style="font-size: 2rem;">❌</div>
+                    <div>RÉPONSES INCORRECTES</div>
+                    <div style="margin-top: 10px; font-size: 1rem;">
+                        Tous les noms doivent être corrects et dans le bon ordre
+                    </div>
+                `;
+            }
+            
+            // Animer le résultat
+            resultDiv.style.animation = 'none';
+            setTimeout(() => {
+                resultDiv.style.animation = 'slideIn 0.5s ease';
+            }, 10);
+        }
+
+        // Fonction pour réinitialiser le formulaire
+        function resetForm() {
+            correctNames.forEach((_, index) => {
+                const input = document.getElementById(`input-${index}`);
+                const row = document.getElementById(`row-${index}`);
+                
+                input.value = '';
+                input.disabled = false;
+                row.classList.remove('correct', 'incorrect');
+            });
+            
+            // Masquer le résultat
+            document.getElementById('result').style.display = 'none';
+            
+            // Focus sur le premier champ
+            document.getElementById('input-0').focus();
+        }
+
+        // Fonction pour recharger les noms
+        async function reloadNames() {
+            const loadingDiv = document.getElementById('inputContainer');
+            loadingDiv.innerHTML = '<div class="loading">Rechargement des noms depuis ToGess.txt...</div>';
+            
+            try {
+                const names = await loadNamesFromFile();
+                createInputFields(names);
+                
+                // Réinitialiser le compteur si les noms ont changé
+                if (JSON.stringify(names) !== JSON.stringify(currentNames)) {
+                    attemptCount = 0;
+                    document.getElementById('attemptCount').textContent = attemptCount;
+                    currentNames = names;
+                    resetForm();
+                }
+            } catch (error) {
+                loadingDiv.innerHTML = `
+                    <div class="result error">
+                        <div style="font-size: 2rem;">⚠️</div>
+                        <div>ERREUR DE CHARGEMENT</div>
+                        <div style="margin-top: 10px; font-size: 1rem;">
+                            Impossible de charger ToGess.txt<br>
+                            ${error.message}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Charger les noms initialement
+            await reloadNames();
+            
+            // Événements
+            document.getElementById('submitBtn').addEventListener('click', checkAnswers);
+            document.getElementById('resetBtn').addEventListener('click', resetForm);
+            
+            // Permettre la soumission avec Entrée
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    checkAnswers();
+                }
+                if (e.key === 'Escape') {
+                    resetForm();
+                }
+            });
+            
+            // Recharger les noms quand on revient sur la page
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    reloadNames();
+                }
+            });
+            
+            // Recharger les noms à chaque vérification
+            document.getElementById('submitBtn').addEventListener('click', reloadNames);
+        });
+
+        // Forcer le rechargement à chaque actualisation
+        window.addEventListener('load', () => {
+            // Supprimer le cache
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+        });
+    </script>
+</body>
+</html>
